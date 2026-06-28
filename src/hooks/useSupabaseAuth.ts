@@ -94,7 +94,7 @@ export function useSupabaseAuth() {
 
                     options: {
 
-                      emailRedirectTo: `https://whimsilogical-hearth.netlify.app/auth/callback`,
+                      emailRedirectTo: 'https://whimsilogical-hearth.netlify.app/auth/callback',
 
                     },
 
@@ -139,7 +139,7 @@ export function useSupabaseAuth() {
 
                     options: {
 
-                      emailRedirectTo: `https://whimsilogical-hearth.netlify.app/auth/callback`,
+                      emailRedirectTo: 'https://whimsilogical-hearth.netlify.app/auth/callback',
 
                     },
 
