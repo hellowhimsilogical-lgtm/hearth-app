@@ -7,9 +7,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      strategies: 'injectManifest',
-      srcDir: 'src',
-      filename: 'sw.ts',
+      strategies: 'generateSW',
       manifest: {
         name: 'Hearth',
         short_name: 'Hearth',
