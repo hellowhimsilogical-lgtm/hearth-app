@@ -8,44 +8,44 @@ export function AuthProvider({ children }) {
     const [session, setSession] = useState(null);
     const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+    useEffect(() => {
         supabase.auth.getSession().then(({ data: { session } }) => {
+            setSession(session);
+            setUser(session?.user ?? null);
+            setLoading(false);
+        });
+
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(
+            (_event, session) => {
                 setSession(session);
                 setUser(session?.user ?? null);
                 setLoading(false);
-        });
+            }
+        );
 
-                const { data: { subscription } } = supabase.auth.onAuthStateChange(
-                        (_event, session) => {
-                                  setSession(session);
-                                  setUser(session?.user ?? null);
-                                  setLoading(false);
-                        }
-                      );
+        return () => subscription.unsubscribe();
+    }, []);
 
-                return () => subscription.unsubscribe();
-  }, []);
-
-  const signIn = async (email, password) => {
+    const signIn = async (email, password) => {
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         return data;
-  };
+    };
 
-  const signUp = async (email, password) => {
+    const signUp = async (email, password) => {
         const { data, error } = await supabase.auth.signUp({ email, password });
         if (error) throw error;
         return data;
-  };
+    };
 
-  const signOut = async () => {
+    const signOut = async () => {
         const { error } = await supabase.auth.signOut();
         if (error) throw error;
-  };
+    };
 
-  const value = { user, session, loading, signIn, signUp, signOut };
+    const value = { user, session, loading, signIn, signUp, signOut };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>AuthContext.Provider>;
+    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {
