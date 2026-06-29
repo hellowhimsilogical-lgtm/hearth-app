@@ -19,14 +19,14 @@ export function useSupabaseAuth() {
       if (mounted) { setSession(null); setLoading(false); }
     });
 
-    const { data: listener } = supabase.auth.onAuthStateChange((_e, s) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, s) => {
       if (mounted) { setSession(s); setLoading(false); }
     });
 
     return () => {
       mounted = false;
       clearTimeout(timeout);
-      listener?.subscription?.unsubscribe();
+      subscription?.unsubscribe();
     };
   }, []);
 

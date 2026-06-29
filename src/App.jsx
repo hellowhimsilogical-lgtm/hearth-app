@@ -65,20 +65,37 @@ function LoadingScreen() {
 }
 
 function AuthScreen() {
-  const { session, loading, signIn, signUp } = useSupabaseAuth();
+  const { loading } = useSupabaseAuth();
   const [email, setEmail] = useState("");
   const [mode, setMode] = useState("signin");
   const [message, setMessage] = useState("");
+  const [sending, setSending] = useState(false);
 
-  const handleAuth = async (e) => {
-    e.preventDefault();
+  const handleAuth = async (ev) => {
+    ev.preventDefault();
     setMessage("");
+
+    const trimmed = email.trim();
+    if (!trimmed) {
+      setMessage("Please enter your email");
+      return;
+    }
+
+    setSending(true);
     try {
-      const error = mode === "signin" ? await signIn(email) : await signUp(email);
-      if (error) setMessage(error);
+      const { error } = await supabase.auth.signInWithOtp({
+        email: trimmed,
+        options: {
+          shouldCreateUser: true,
+          emailRedirectTo: window.location.origin,
+        },
+      });
+      if (error) setMessage(error.message);
       else setMessage("✓ Check your email for the magic link");
     } catch (err) {
-      setMessage("Error: " + err.message);
+      setMessage("Error: " + (err?.message || String(err)));
+    } finally {
+      setSending(false);
     }
   };
 
@@ -96,8 +113,8 @@ function AuthScreen() {
         <form onSubmit={handleAuth}>
           <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="your@email.com"
             style={{...IS,background:"rgba(255,255,255,0.1)",color:"#F0EBD8",border:"1.5px solid rgba(255,255,255,0.2)"}}/>
-          <button type="submit" style={{width:"100%",background:"#1A4A2E",color:"#fff",border:"none",borderRadius:12,padding:"13px",fontSize:15,fontWeight:700,cursor:"pointer",marginTop:10,fontFamily:"'Nunito',sans-serif"}}>
-            {mode === "signin" ? "Send Magic Link" : "Sign Up"} →
+          <button type="submit" disabled={sending} style={{width:"100%",background:"#1A4A2E",color:"#fff",border:"none",borderRadius:12,padding:"13px",fontSize:15,fontWeight:700,cursor:sending?"default":"pointer",marginTop:10,fontFamily:"'Nunito',sans-serif",opacity:sending?0.7:1}}>
+            {sending ? "Sending…" : mode === "signin" ? "Send Magic Link" : "Sign Up"} →
           </button>
         </form>
         {message && (
