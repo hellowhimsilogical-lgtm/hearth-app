@@ -9,63 +9,63 @@ export default function Login() {
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setError(null);
         setLoading(true);
         try {
-                if (isSignUp) {
-                          await signUp(email, password);
-                } else {
-                          await signIn(email, password);
-                }
+            if (isSignUp) {
+                await signUp(email, password);
+            } else {
+                await signIn(email, password);
+            }
         } catch (err) {
-                setError(err.message);
+            setError(err.message);
         } finally {
-                setLoading(false);
+            setLoading(false);
         }
-  };
+    };
 
-  return (
+    return (
         <div className="login-page">
-              <div className="login-card">
-                      <h1>Hearth</h1>h1>
-                      <p>Your family organizer</p>p>
-                      <form onSubmit={handleSubmit}>
-                                <div className="form-group">
-                                            <label htmlFor="email">Email</label>label>
-                                            <input
-                                                            id="email"
-                                                            type="email"
-                                                            value={email}
-                                                            onChange={(e) => setEmail(e.target.value)}
-                                                            required
-                                                            autoComplete="email"
-                                                          />
-                                </div>div>
-                                <div className="form-group">
-                                            <label htmlFor="password">Password</label>label>
-                                            <input
-                                                            id="password"
-                                                            type="password"
-                                                            value={password}
-                                                            onChange={(e) => setPassword(e.target.value)}
-                                                            required
-                                                            autoComplete={isSignUp ? 'new-password' : 'current-password'}
-                                                          />
-                                </div>div>
-                        {error && <p className="error">{error}</p>p>}
-                                <button type="submit" disabled={loading}>
-                                  {loading ? 'Please wait...' : isSignUp ? 'Create Account' : 'Sign In'}
-                                </button>button>
-                      </form>form>
-                      <button
-                                  className="toggle-mode"
-                                  onClick={() => { setIsSignUp(!isSignUp); setError(null); }}
-                                >
-                        {isSignUp ? 'Already have an account? Sign in' : "Don't have an account? Sign up"}
-                      </button>button>
-              </div>div>
-        </div>div>
-      );
-}</div>
+            <div className="login-card">
+                <h1>Hearth</h1>
+                <p>Your family organizer</p>
+                <form onSubmit={handleSubmit}>
+                    <div className="form-group">
+                        <label htmlFor="email">Email</label>
+                        <input
+                            id="email"
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                            autoComplete="email"
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="password">Password</label>
+                        <input
+                            id="password"
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                            autoComplete={isSignUp ? 'new-password' : 'current-password'}
+                        />
+                    </div>
+                    {error && <p className="error-message">{error}</p>}
+                    <button type="submit" disabled={loading}>
+                        {loading ? 'Please wait...' : isSignUp ? 'Sign Up' : 'Sign In'}
+                    </button>
+                </form>
+                <button
+                    className="toggle-auth"
+                    onClick={() => { setIsSignUp(!isSignUp); setError(null); }}
+                >
+                    {isSignUp ? 'Already have an account? Sign In' : 'Need an account? Sign Up'}
+                </button>
+            </div>
+        </div>
+    );
+}
