@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../lib/db';
-import { supabase } from '../lib/supabaseClient';
+import { supabase } from '../supabase';
 import { useAuth } from '../hooks/useAuth';
 
 export default function Tasks() {
