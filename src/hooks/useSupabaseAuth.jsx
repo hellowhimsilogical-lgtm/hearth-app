@@ -2,27 +2,39 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../supabase';
 
 export function useSupabaseAuth() {
-  const [session, setSession] = useState(null);
+  const [session, setSession] = useState(undefined);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let mounted = true;
+    // Timeout fallback - if getSession hangs, stop loading after 5s
+    const timeout = setTimeout(() => {
+      if (mounted && loading) {
+        setSession(null);
+        setLoading(false);
+      }
+    }, 5000);
+
     supabase.auth.getSession().then((result) => {
+      clearTimeout(timeout);
       if (!mounted) return;
-      const session = result?.data?.session || null;
-      setSession(session);
+      setSession(result?.data?.session || null);
       setLoading(false);
     }).catch(() => {
-      if (mounted) setLoading(false);
+      clearTimeout(timeout);
+      if (mounted) { setSession(null); setLoading(false); }
     });
+
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       if (mounted) {
         setSession(session);
         setLoading(false);
       }
     });
+
     return () => {
       mounted = false;
+      clearTimeout(timeout);
       listener?.subscription?.unsubscribe();
     };
   }, []);
@@ -33,8 +45,7 @@ export function useSupabaseAuth() {
         email,
         options: { shouldCreateUser: false },
       });
-      if (error) return error.message;
-      return null;
+      return error ? error.message : null;
     } catch (e) { return e.message; }
   };
 
@@ -44,8 +55,7 @@ export function useSupabaseAuth() {
         email,
         options: { shouldCreateUser: true },
       });
-      if (error) return error.message;
-      return null;
+      return error ? error.message : null;
     } catch (e) { return e.message; }
   };
 
